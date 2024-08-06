@@ -23,7 +23,7 @@ function Popup() {
                 </div>
             </Card.Body>
             <Card.Footer>
-                <Github></Github> <a href="https://github.com/andresdlroca">Andresdlroca</a>
+                <Github></Github> <a href="https://github.com/andresdlroca" target="_blank" rel="noopener noreferrer">Andresdlroca</a>
             </Card.Footer>
         </Card>
     )
