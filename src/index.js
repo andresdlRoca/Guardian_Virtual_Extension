@@ -2,14 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Info from './components/information/info';
+import Configuration from './components/configuration/configuration';
+import Analysis from './components/analysis_results/analysis';
+import Report from './components/report_a_problem/report_a_problem';
 import reportWebVitals from './reportWebVitals';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <div>
+        <Routes>
+          <Route exact path="/" element={<App />} />
+          <Route path="/info" element={<Info />} />
+          <Route path="/config" element={<Configuration />} />
+          <Route path="/analysis" element={<Analysis />} />
+          <Route path="/report" element={<Report />} />
+          <Route path="*" element={<h1>Not Found</h1>} />
+        </Routes>
+      </div>
+    </Router>
     {/* <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<App />} />

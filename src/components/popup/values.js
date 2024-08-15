@@ -15,11 +15,11 @@ function Popup() {
             </Card.Body>
             <Card.Body>
                 <div className="d-grid gap-2">
-                <Button variant="primary">Más información</Button>
+                <a href="#/info" class="btn btn-primary">Mas información</a>
                 <hr style={{borderTop: '3px dashed #bbb'}}/>
-                <Button variant="secondary">Configuración</Button>
+                <a href="#/config" class="btn btn-secondary">Configuración</a>
                 <hr style={{borderTop: '3px dashed #bbb'}}/>
-                <Button variant="warning">Reportar un problema</Button>
+                <a href="#/report" class="btn btn-warning">Reportar un problema</a>
                 </div>
             </Card.Body>
             <Card.Footer>
