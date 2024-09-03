@@ -15,26 +15,25 @@ chrome.runtime.onInstalled.addListener(() => {
         function: grabAndParseSelectedTextWithLinks
       }, async (results) => {
 
-        if (results && results[0]) {
-          await phishingAnalysis(results[0].result)
-            .then(async (analysis_results) => {
-              console.log('Analysis results:', analysis_results);
-              await chrome.windows.create({
-                url: "index.html#/analysis", // Window with the phishing analysis results
-                type: "popup",
-                focused: true,
-                width: 400,
-                height: 600
-            })
-              .then(async (win) => {
-                  console.log(new Date().toLocaleTimeString());
-                  console.log("Service-side:", analysis_results);
-                  setTimeout(() => {
-                    chrome.runtime.sendMessage(win.tabs.id, { message: 'Analysis', data: analysis_results});
-                  }, 1000);
+        chrome.windows.create({
+          url: "index.html#/analysis", // Window with the phishing analysis results
+          type: "popup",
+          focused: true,
+          width: 400,
+          height: 600
+        }).then(async (win) => {
+
+          if (results && results[0]) {
+            await phishingAnalysis(results[0].result)
+              .then(async (analysis_results) => {
+                console.log(new Date().toLocaleTimeString());
+                console.log("Service-side:", analysis_results);
+                setTimeout(() => {
+                  chrome.runtime.sendMessage(win.tabs.id, { message: 'Analysis', data: analysis_results});
+                }, 1000);
             });
-          });
-        }
+          }
+        });
       });
     }
   });
