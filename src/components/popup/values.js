@@ -6,7 +6,7 @@ function Popup() {
         
         <Card style={{width: '18rem'}} className="mx-auto text-center">
             <Card.Body>
-                <Card.Title>Guardian Virtual</Card.Title>
+                <Card.Title>Guardián Virtual</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Detección de Phishing</Card.Subtitle>
                 <Card.Text>
                     Esta extensión te permitira detectar phishing en texto seleccionado.
@@ -20,6 +20,8 @@ function Popup() {
                 <a href="#/config" class="btn btn-secondary">Configuración</a>
                 <hr style={{borderTop: '3px dashed #bbb'}}/>
                 <a href="#/report" class="btn btn-warning">Reportar un problema</a>
+                <hr style={{borderTop: '3px dashed #bbb'}}/>
+                <a href="#/analysis" class="btn btn-success">Análisis de Phishing - Remover</a>
                 </div>
             </Card.Body>
             <Card.Footer>

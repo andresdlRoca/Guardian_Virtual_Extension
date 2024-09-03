@@ -6,7 +6,7 @@ function Report() {
         
         <Card style={{width: '18rem'}} className="mx-auto text-center">
             <Card.Body>
-                <Card.Title>Guardian Virtual</Card.Title>
+                <Card.Title>Guardián Virtual</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">Report</Card.Subtitle>
                 <Card.Text>
                 </Card.Text>

@@ -6,8 +6,8 @@ function Info() {
         
         <Card style={{width: '18rem'}} className="mx-auto text-center">
             <Card.Body>
-                <Card.Title>Guardian Virtual</Card.Title>
-                <Card.Subtitle className="mb-2 text-muted">Informacion general</Card.Subtitle>
+                <Card.Title>Guardián Virtual</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">Información general</Card.Subtitle>
                 <Card.Text>
                 </Card.Text>
             </Card.Body>

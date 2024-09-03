@@ -13,9 +13,27 @@ chrome.runtime.onInstalled.addListener(() => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         function: grabAndParseSelectedTextWithLinks
-      }, (results) => {
+      }, async (results) => {
+
         if (results && results[0]) {
-          phishingAnalysis(results[0].result);
+          await phishingAnalysis(results[0].result)
+            .then(async (analysis_results) => {
+              console.log('Analysis results:', analysis_results);
+              await chrome.windows.create({
+                url: "index.html#/analysis", // Window with the phishing analysis results
+                type: "popup",
+                focused: true,
+                width: 400,
+                height: 600
+            })
+              .then(async (win) => {
+                  console.log(new Date().toLocaleTimeString());
+                  console.log("Service-side:", analysis_results);
+                  setTimeout(() => {
+                    chrome.runtime.sendMessage(win.tabs.id, { message: 'Analysis', data: analysis_results});
+                  }, 1000);
+            });
+          });
         }
       });
     }
@@ -27,7 +45,7 @@ chrome.runtime.onInstalled.addListener(() => {
       const urls = text.match(/\bhttps?:\/\/\S+/gi);
       if (!urls) {
         console.log('No URLs found in the selected text.');
-        return;
+        return "No URLs";
       }
 
       const fqdn = urls.map(url => new URL(url).hostname);
@@ -50,6 +68,16 @@ chrome.runtime.onInstalled.addListener(() => {
       // Have a variable to store text without URLs
       const textWithoutUrls = text.replace(/\bhttps?:\/\/\S+/gi, '');
       console.log('Text without URLs:', textWithoutUrls);
+
+      return {
+        text,
+        textWithoutUrls,
+        urls,
+        fqdn,
+        whitelistResults,
+        blacklistResults,
+        popularityResults
+      };
 
     } catch (error) {
       console.error('Error while analyzing phishing:', error);
