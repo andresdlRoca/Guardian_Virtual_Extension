@@ -10,7 +10,7 @@ function Popup() {
                 <Card.Subtitle className="mb-2 text-muted">Detección de Phishing</Card.Subtitle>
                 <Card.Text>
                     Esta extensión te permitira detectar phishing en texto seleccionado.
-                    Solo selecciona el texto y da click derecho para analizar.
+                    Solo selecciona el texto, da click derecho y elige analizar phishing.
                 </Card.Text>
             </Card.Body>
             <Card.Body>
