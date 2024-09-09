@@ -16,12 +16,8 @@ function Popup() {
             <Card.Body>
                 <div className="d-grid gap-2">
                 <a href="#/info" class="btn btn-primary">Mas información</a>
-                <hr style={{borderTop: '3px dashed #bbb'}}/>
-                <a href="#/config" class="btn btn-secondary">Configuración</a>
-                <hr style={{borderTop: '3px dashed #bbb'}}/>
-                <a href="#/report" class="btn btn-warning">Reportar un problema</a>
-                <hr style={{borderTop: '3px dashed #bbb'}}/>
-                <a href="#/analysis" class="btn btn-success">Análisis de Phishing - Remover</a>
+                {/* <hr style={{borderTop: '3px dashed #bbb'}}/>
+                <a href="#/config" class="btn btn-secondary">Configuración</a> */}
                 </div>
             </Card.Body>
             <Card.Footer>

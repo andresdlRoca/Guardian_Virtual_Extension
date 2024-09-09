@@ -41,13 +41,16 @@ chrome.runtime.onInstalled.addListener(() => {
   async function phishingAnalysis(text) {
     try {
       // Should have text and urls separated
-      const urls = text.match(/\bhttps?:\/\/\S+/gi);
+      let urls = text.match(/\bhttps?:\/\/\S+/gi);
       if (!urls) {
         console.log('No URLs found in the selected text.');
         return "No URLs";
       }
 
-      const fqdn = urls.map(url => new URL(url).hostname);
+      let fqdn = urls.map(url => new URL(url).hostname);
+      // Remove duplicates
+      fqdn = [...new Set(fqdn)];
+      urls = [...new Set(urls)];
 
       console.log('URLs:', urls);
       console.log('FQDNs:', fqdn);
@@ -57,7 +60,7 @@ chrome.runtime.onInstalled.addListener(() => {
       console.log('Whitelist results:', whitelistResults);
 
       // Check each URL against the blacklist
-      const blacklistResults = await Promise.all(fqdn.map(checkBlacklist));
+      const blacklistResults = await Promise.all(urls.map(checkBlacklist));
       console.log('Blacklist results:', blacklistResults);
 
       // Check each URL against the popularity rank
