@@ -71,6 +71,18 @@ chrome.runtime.onInstalled.addListener(() => {
       const textWithoutUrls = text.replace(/\bhttps?:\/\/\S+/gi, '');
       console.log('Text without URLs:', textWithoutUrls);
 
+      // Analyze URL
+      const urlAnalysis = await Promise.all(urls.map(analyzeURL));
+      console.log('URL analysis:', urlAnalysis);
+
+      // Analyze message
+      const msgAnalysis = await Promise.all(urls.map(analyzeMSG));
+      console.log('Message analysis:', msgAnalysis);
+
+      // Analyze content
+      const contentAnalysis = await Promise.all(urls.map(analyzeContent));
+      console.log('Content analysis:', contentAnalysis);
+
       return {
         text,
         textWithoutUrls,
@@ -102,6 +114,75 @@ chrome.runtime.onInstalled.addListener(() => {
     } catch (error) {
       console.error('Error while fetching data:', error);
       return { error: error.message };
+    }
+  }
+
+  async function analyzeURL(url) {
+    try{
+      const apiEndpoint = `${API_URL}/url_detection`;
+      const formData = new FormData();
+      formData.append('url', url);
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error while fetching response from API (Analyze URL): ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error('Error while analyzing URL - ML Layer:', error);
+    }
+  }
+
+  async function analyzeMSG(msg) {
+    try {
+      const apiEndpoint = `${API_URL}/msg_detection`;
+      const formData = new FormData();
+      formData.append('message', msg);
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error while fetching response from API (Analyze Message): ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error('Error while analyzing message - ML Layer:', error);
+    }
+  }
+
+  async function analyzeContent(url) {
+    try {
+      const apiEndpoint = `${API_URL}/content_detection`;
+      const formData = new FormData();
+      formData.append('url', url);
+
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error while fetching response from API (Analyze Content): ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error('Error while analyzing content - ML Layer:', error);
     }
   }
 
