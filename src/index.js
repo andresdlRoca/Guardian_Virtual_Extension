@@ -7,6 +7,7 @@ import Configuration from './components/configuration/configuration';
 import Analysis from './components/analysis_results/analysis';
 import Report from './components/report_a_problem/report_a_problem';
 import reportWebVitals from './reportWebVitals';
+import AdvancedResults from './components/analysis_results/advanced_results';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -20,6 +21,7 @@ root.render(
           <Route path="/info" element={<Info />} />
           <Route path="/config" element={<Configuration />} />
           <Route path="/analysis" element={<Analysis />} />
+          <Route path="/advanced_results" element={<AdvancedResults />} />
           <Route path="/report" element={<Report />} />
           <Route path="*" element={<h1>Not Found</h1>} />
         </Routes>

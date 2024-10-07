@@ -90,7 +90,10 @@ chrome.runtime.onInstalled.addListener(() => {
         fqdn,
         whitelistResults,
         blacklistResults,
-        popularityResults
+        popularityResults,
+        urlAnalysis,
+        msgAnalysis,
+        contentAnalysis
       };
 
     } catch (error) {
