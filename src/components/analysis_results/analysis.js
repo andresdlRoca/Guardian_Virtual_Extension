@@ -17,8 +17,6 @@ function Analysis() {
 
     const [visible, setVisible] = useState(false);
     
-    const [visibleResult, setVisibleResult] = useState(false);
-
     const [safetyIndex, setSafetyIndex] = useState(100);
 
 
@@ -50,22 +48,59 @@ function Analysis() {
     });
 
     function calculateIndex(data) {
-        let index = 100;
+        let index = 0;
 
         try {
             // Check if all whitelist results array have {status: 'In Whitelist'}
             if (data.whitelistResults.every(result => result.status === 'In Whitelist')) {
                 index = 100;
                 return index;
-            } else {
-                index = 60;
             }
         } catch (error) {
-            //Valores de prueba
-            console.error(error);
-            index = 60;
-            return index;
+            console.log("No URLs found - Whitelist");
         }
+
+        try {
+            // Check if all blacklist results array have {status: 'In Blacklist'}
+            if (data.blacklistResults.every(result => result.status === 'In Blacklist')) {
+                index = 0;
+                return index;
+            }
+        } catch (error) {
+            console.log("No URLs found - Blacklist");
+        }
+
+        try { // 20%
+            // Check if popularity results array have ... 
+            console.log("Popularity Results:", data.popularityResults);
+        } catch (error) {
+            console.log("No URLs found - Popularity");
+        }
+
+        try { // 20%
+            // Check if URL results array have ...
+            console.log("URL Results:", data.urlResults);
+            
+        } catch (error) {
+            console.log("No URLs found - URL");
+        }
+
+        try { // 20%
+            // Check if message results array have ...
+            console.log("Message Results:", data.msgResults);
+        } catch (error) {
+            console.log("No MSGs found - Message");
+        }
+
+        try { // 40%
+            // Check if content results array have ...
+            console.log("Content Results:", data.contentResults);
+        }
+        catch (error) {
+            console.log("No Content found - Content");
+        }
+
+        return index;
 
     }
 
