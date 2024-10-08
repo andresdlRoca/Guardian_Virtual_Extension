@@ -25,8 +25,10 @@ function Analysis() {
             return { color: 'green', message: 'Contenido Seguro' };
         } else if (index >= 60) {
             return { color: '#FFA500', message: 'Contenido Sospechoso' };
-        } else {
+        } else if (index >= 0) {
             return { color: 'red', message: 'Contenido Peligroso' };
+        } else {
+            return { color: 'black', message: 'Error durante analisis' };
         }
     }
     
@@ -38,6 +40,8 @@ function Analysis() {
             console.log("Content-side:", request.data);
             const results = await handleData(request.data);
 
+            console.log("Results after dataHandler:", results);
+
             const calculatedIndex = calculateIndex(results);
 
             console.log("Calculated Index:", calculatedIndex);
@@ -48,7 +52,10 @@ function Analysis() {
     });
 
     function calculateIndex(data) {
-        let index = 0;
+        let index = -1;
+        let counter = 0;
+
+        console.log("Data - CalcIndex:", data);
 
         try {
             // Check if all whitelist results array have {status: 'In Whitelist'}
@@ -71,33 +78,60 @@ function Analysis() {
         }
 
         try { // 20%
-            // Check if popularity results array have ... 
-            console.log("Popularity Results:", data.popularityResults);
+            // Check if popularity results array have {rank: x} where x > 500000
+            if (data.popularityResults.every(result => result.rank > 500000)) {
+                index += 20;
+                counter++;
+            } else {
+                counter++;
+            }
         } catch (error) {
             console.log("No URLs found - Popularity");
         }
 
         try { // 20%
-            // Check if URL results array have ...
-            console.log("URL Results:", data.urlResults);
+            // Check if URL results array have {prediction: 'Safe'} 
+            if (data.urlResults.every(result => result.prediction === 'Safe')) {
+                index += 20;
+                counter++;
+            } else {
+                counter++;
+            }
             
         } catch (error) {
             console.log("No URLs found - URL");
         }
 
         try { // 20%
-            // Check if message results array have ...
-            console.log("Message Results:", data.msgResults);
+            // Check if message results array have {prediction: 'Safe'}
+            if (data.msgResults.every(result => result.prediction === 'Safe')) {
+                index += 20;
+                counter++;
+            } else {
+                counter++;
+            }
         } catch (error) {
             console.log("No MSGs found - Message");
         }
 
         try { // 40%
-            // Check if content results array have ...
+            // Check if content results array have {prediction: 'Safe'}
+            if (data.contentResults.every(result => result.prediction === 'Safe')) {
+                index += 40;
+                counter++;
+            } else {
+                counter++;
+            }
             console.log("Content Results:", data.contentResults);
         }
         catch (error) {
             console.log("No Content found - Content");
+        }
+
+        if (counter === 0) {
+            index = -1;
+        } else {
+            index = (index / 100) * (counter / 4) * 100;
         }
 
         return index;
@@ -116,13 +150,13 @@ function Analysis() {
         ])
 
         return {
-            fqdn: fqdn,
-            whitelistResults: whitelistResults,
-            blacklistResults: blacklistResults,
-            popularityResults: popularityResults,
-            urlResults: urlResults,
-            msgResults: msgResults,
-            contentResults: contentResults
+            fqdn: data.fqdn,
+            whitelistResults: data.whitelistResults,
+            blacklistResults: data.blacklistResults,
+            popularityResults: data.popularityResults,
+            urlResults: data.urlAnalysis,
+            msgResults: data.msgAnalysis,
+            contentResults: data.contentAnalysis
         }
     }
 
