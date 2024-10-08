@@ -1,4 +1,4 @@
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { Github } from "react-bootstrap-icons";
 
 function Configuration() {

@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(() => {
           url: "index.html#/analysis", // Window with the phishing analysis results
           type: "popup",
           focused: true,
-          width: 400,
+          width: 700,
           height: 600
         }).then(async (win) => {
 
@@ -44,7 +44,27 @@ chrome.runtime.onInstalled.addListener(() => {
       let urls = text.match(/\bhttps?:\/\/\S+/gi);
       if (!urls) {
         console.log('No URLs found in the selected text.');
-        return "No URLs";
+
+        // Have a variable to store text without URLs
+        const textWithoutUrls = text.replace(/\bhttps?:\/\/\S+/gi, '');
+        console.log('Text without URLs:', textWithoutUrls);
+        
+        const msgAnalysis = await Promise.all([analyzeMSG(textWithoutUrls)]);
+        console.log('Message analysis:', msgAnalysis);
+
+        return {
+          text,
+          textWithoutUrls,
+          urls: [],
+          fqdn: [],
+          whitelistResults: [],
+          blacklistResults: [],
+          popularityResults: [],
+          urlAnalysis: [],
+          msgAnalysis,
+          contentAnalysis: []
+        };
+
       }
 
       let fqdn = urls.map(url => new URL(url).hostname);
@@ -60,7 +80,7 @@ chrome.runtime.onInstalled.addListener(() => {
       console.log('Whitelist results:', whitelistResults);
 
       // Check each URL against the blacklist
-      const blacklistResults = await Promise.all(urls.map(checkBlacklist));
+      const blacklistResults = await Promise.all(fqdn.map(checkBlacklist));
       console.log('Blacklist results:', blacklistResults);
 
       // Check each URL against the popularity rank
@@ -76,7 +96,7 @@ chrome.runtime.onInstalled.addListener(() => {
       console.log('URL analysis:', urlAnalysis);
 
       // Analyze message
-      const msgAnalysis = await Promise.all(urls.map(analyzeMSG));
+      const msgAnalysis = await Promise.all([analyzeMSG(textWithoutUrls)]);
       console.log('Message analysis:', msgAnalysis);
 
       // Analyze content

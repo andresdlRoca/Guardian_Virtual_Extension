@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, { useState } from "react";
 import { Card, Spinner } from "react-bootstrap";
 import { Github } from "react-bootstrap-icons";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import 'react-circular-progressbar/dist/styles.css';
+import { Link } from "react-router-dom";
 
 function Analysis() {
-
+    const [urls, setUrls] = useState([]);
     const [fqdn, setFqdn] = useState([]);
     const [whitelistResults, setWhitelistResults] = useState(null);
     const [blacklistResults, setBlacklistResults] = useState(null);
@@ -52,75 +53,92 @@ function Analysis() {
     });
 
     function calculateIndex(data) {
-        let index = -1;
-        let counter = 0;
+        let index = 0;
+        let totalWeight = 0;
+
+        let weights = {
+            whitelist: 0,
+            blacklist: 0,
+            popularity: 20,
+            url: 20,
+            msg: 20,
+            content: 40
+        }
 
         console.log("Data - CalcIndex:", data);
 
         try {
-            // Check if all whitelist results array have {status: 'In Whitelist'}
-            if (data.whitelistResults.every(result => result.status === 'In Whitelist')) {
-                index = 100;
-                return index;
+            // Check if whitelistResults array is empty
+            if (data.whitelistResults.length === 0) {
+                console.log("No URLs found - Whitelist");
+            } else {
+                // Check if all whitelist results array have {status: 'In Whitelist'}
+                if (data.whitelistResults.every(result => result.status === 'In Whitelist')) {
+                    index = 100;
+                    return index;
+                }
             }
         } catch (error) {
             console.log("No URLs found - Whitelist");
         }
 
         try {
-            // Check if all blacklist results array have {status: 'In Blacklist'}
-            if (data.blacklistResults.every(result => result.status === 'In Blacklist')) {
-                index = 0;
-                return index;
+            if (data.blacklistResults.length === 0) {
+                console.log("No URLs found - Blacklist");
+            } else {
+                // Check if at least one blacklist results array have {status: 'In Blacklist'}
+                if (data.blacklistResults.some(result => result.status === 'In Blacklist')) {
+                    index = 0;
+                    return index;
+                }
             }
         } catch (error) {
             console.log("No URLs found - Blacklist");
         }
 
         try { // 20%
-            // Check if popularity results array have {rank: x} where x > 500000
-            if (data.popularityResults.every(result => result.rank > 500000)) {
-                index += 20;
-                counter++;
-            } else {
-                counter++;
+            if (data.popularityResults.length > 0) {
+                totalWeight += weights.popularity;
+                // Check if popularity results array have {rank: x} where x > 500000
+                if (data.popularityResults.every(result => result.rank > 500000)) {
+                    index += weights.popularity;
+                }
             }
         } catch (error) {
             console.log("No URLs found - Popularity");
         }
 
         try { // 20%
-            // Check if URL results array have {prediction: 'Safe'} 
-            if (data.urlResults.every(result => result.prediction === 'Safe')) {
-                index += 20;
-                counter++;
-            } else {
-                counter++;
-            }
-            
+            if (data.urlResults.length > 0) {
+                totalWeight += weights.url;
+                // Check if URL results array have {prediction: 'Safe'}
+                if (data.urlResults.every(result => result.prediction === 'Safe')) {
+                    index += weights.url;
+                }
+            }        
         } catch (error) {
             console.log("No URLs found - URL");
         }
 
         try { // 20%
-            // Check if message results array have {prediction: 'Safe'}
-            if (data.msgResults.every(result => result.prediction === 'Safe')) {
-                index += 20;
-                counter++;
-            } else {
-                counter++;
+            if (data.msgResults.length > 0) {
+                totalWeight += weights.msg;
+                // Check if MSG results array have {prediction: 'Safe'}
+                if (data.msgResults.every(result => result.prediction === 'Safe')) {
+                    index += weights.msg;
+                }
             }
         } catch (error) {
             console.log("No MSGs found - Message");
         }
 
         try { // 40%
-            // Check if content results array have {prediction: 'Safe'}
-            if (data.contentResults.every(result => result.prediction === 'Safe')) {
-                index += 40;
-                counter++;
-            } else {
-                counter++;
+            if (data.contentResults.length > 0) {
+                totalWeight += weights.content;
+                // Check if Content results array have {prediction: 'Safe'}
+                if (data.contentResults.every(result => result.prediction === 'Safe')) {
+                    index += weights.content;
+                }
             }
             console.log("Content Results:", data.contentResults);
         }
@@ -128,10 +146,8 @@ function Analysis() {
             console.log("No Content found - Content");
         }
 
-        if (counter === 0) {
-            index = -1;
-        } else {
-            index = (index / 100) * (counter / 4) * 100;
+        if (totalWeight > 0) {
+            index = (index / totalWeight) * 100;
         }
 
         return index;
@@ -140,6 +156,7 @@ function Analysis() {
 
     async function handleData(data) {
         await Promise.all([
+            updateURLS(data.urls),
             updateFqdn(data.fqdn),
             updateWhitelistResults(data.whitelistResults),
             updateBlacklistResults(data.blacklistResults),
@@ -150,6 +167,7 @@ function Analysis() {
         ])
 
         return {
+            urls: data.urls,
             fqdn: data.fqdn,
             whitelistResults: data.whitelistResults,
             blacklistResults: data.blacklistResults,
@@ -158,6 +176,13 @@ function Analysis() {
             msgResults: data.msgAnalysis,
             contentResults: data.contentAnalysis
         }
+    }
+
+    async function updateURLS(urls) {
+        return new Promise((resolve) => {
+            setUrls(urls);
+            resolve();
+        });
     }
 
     async function updateFqdn(fqdn) {
@@ -234,7 +259,13 @@ function Analysis() {
                             <button onClick={() => setSafetyIndex(60)}>60%</button>
                             <button onClick={() => setSafetyIndex(40)}>40%</button> */}
                             <br></br>
-                            <a href="#/advanced_results" class="btn btn-primary">Resultados Avanzados</a>
+                            <Link to='/advanced_results' 
+                                state={{safetyIndex: safetyIndex, urls: urls, fqdn: fqdn, whitelistResults: whitelistResults, 
+                                    blacklistResults: blacklistResults, popularityResults: popularityResults, 
+                                    urlResults: urlResults, msgResults: msgResults, contentResults: contentResults
+                                }} 
+                                className="btn btn-primary">Ver Detalles</Link>
+
                         </div> : 
                         <div>
                             <Spinner animation="border" role="status"/>
