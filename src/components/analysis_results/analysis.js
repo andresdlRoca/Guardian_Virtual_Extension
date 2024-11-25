@@ -100,8 +100,9 @@ function Analysis() {
             if (data.popularityResults.length > 0) {
                 totalWeight += weights.popularity;
                 // Check if popularity results array have {rank: x} where x > 500000
-                if (data.popularityResults.every(result => result.rank > 500000)) {
+                if (data.popularityResults.every(result => result.rank < 500000) && data.popularityResults.every(result => result.rank !== null)) {
                     index += weights.popularity;
+                    console.log("Popularity Results:", data.popularityResults);
                 }
             }
         } catch (error) {
